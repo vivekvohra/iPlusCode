@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>iPlusCode</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="setup">
+    <!-- Logo -->
+    <img src="icons/icon128.png" alt="iPlusCode Logo"
+         class="setup-logo" width="64" height="64" />
+    <h2>👋 Welcome to iPlusCode!</h2>
+    <p class="setup-desc">
+      Enter your Codeforces handle below so you can bookmark problems and track which ones you’ve solved.
+    </p>
+    <input type="text" id="handle" placeholder="Enter Codeforces handle" />
+    <button id="saveHandle">💾 Save Handle</button>
+  </div>
+
+  <div id="mainUI" class="iplus_hidden">
+    <div id="popupHeader">
+      <img
+        id="popupLogo"
+        src="icons/icon128.png"
+        alt="iPlusCode Logo"
+        width="64"
+        height="64"
+      />
+      <h3 id="popupTitle">Bookmarked Problems</h3>
+      <!-- ⚙️ Change Handle button -->
+      <button id="resetHandle" title="Change Codeforces handle">⚙️</button>
+    </div>
+
+    <!-- NEW: filter + sync grouped together -->
+    <div id="controls">
+      <select id="filter">
+        <option value="All">All</option>
+        <option value="<1200">&lt;1200</option>
+        <option value="1200-1600">1200–1600</option>
+        <option value=">1600">&gt;1600</option>
+        <option value="unsolved">Unsolved</option>
+      </select>
+      <input
+        type="text"
+        id="tagFilter"
+        placeholder="Filter by tag…"
+      />
+      <button id="sync">🔄 Sync</button>
+    </div>
+
+    <p id="lastSync"></p>
+
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Solved</th>
+          <th id="th-title" class="sortable">
+            Problem Title
+            <span class="sort-indicator"></span>
+          </th>
+          <th id="th-rating" class="sortable">
+            Rating
+            <span class="sort-indicator"></span>
+          </th>
+          <th>Tags</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+
+  <!-- Notes Modal -->
+  <div id="notesModal" class="iplus_modal iplus_hidden">
+    <div class="modal-content">
+      <span class="close-button" id="closeNotes">&times;</span>
+      <h3>Edit Notes</h3>
+      <textarea
+        id="notesText"
+        rows="10"
+        placeholder="Enter your notes..."
+      ></textarea>
+      <div class="modal-footer">
+        <button id="saveNoteBtn">Save</button>
+        <button id="cancelNoteBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
