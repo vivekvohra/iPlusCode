@@ -13,9 +13,9 @@ The **iPlusCode** Chrome extension helps you track Codeforces problems, view you
 
 - Your Codeforces handle  
 - Bookmarked problems  
-- Optional notes  
+- Optional personal notes  
 - A cached list of your Codeforces friends (for display purposes only)  
-- Cached friend submissions for solved problems (kept only in your local browser storage for performance)
+- Cached friend submissions for solved problems (stored locally for performance)
 
 All of this data is managed using `chrome.storage.sync`, and **never leaves your device or browser**.
 
@@ -23,30 +23,48 @@ All of this data is managed using `chrome.storage.sync`, and **never leaves your
 
 ## What We Do Not Do
 
-- ❌ Collect personal data  
+- ❌ Collect personal or sensitive data  
 - ❌ Track your browsing activity  
-- ❌ Use cookies  
-- ❌ Send or share any data to third-party servers (including ours – we don’t have a server)  
-- ❌ Access your passwords or authentication data  
+- ❌ Use cookies or localStorage  
+- ❌ Send data to any external server (we don’t have one)  
+- ❌ Access your passwords, login sessions, or authentication credentials  
 
 ---
 
 ## Permissions Explanation
 
-This extension requests access to `https://codeforces.com/*` to:
+The extension requests access to:
 
-- Display accepted submissions of your Codeforces friends on problem pages  
-- Fetch your friend list from the `/friends` page *(requires you to be logged in to Codeforces in your browser)*  
-- Highlight which problems you have already solved  
+```json
+"host_permissions": ["https://codeforces.com/*"]
+```
 
-These features rely on **public Codeforces data** or pages you’re already authenticated on. Your credentials are **never accessed, stored, or transmitted** by this extension.
+This permission is necessary to support the core features of the extension. Specifically, it allows the extension to:
+
+* ✅ Access your \[public] submission history using the Codeforces API to highlight which problems you've solved.
+* ✅ Load the `/friends` page (when you're already logged in) to extract your Codeforces friends list, used to display their accepted codes on problems.
+* ✅ Access problem pages and submission pages to extract and display accepted submissions from friends (triggered only when the user clicks “Show Codes”).
+
+These actions:
+
+* Are all triggered by **user interaction** (e.g., clicking buttons in the popup or on a problem page).
+* Use only **publicly available data** from Codeforces or pages you're authenticated on.
+* **Do not** access, read, or store your Codeforces login credentials or sessions.
+* Do **not** automate navigation, manipulate browser tabs, or scrape beyond your interactions.
 
 ---
 
 ## Data Removal
 
-When you uninstall the extension, all stored data is automatically deleted from Chrome's storage.
+All stored data is tied to your Chrome profile and automatically deleted when:
+
+* You uninstall the extension.
+* You clear Chrome’s sync storage manually.
 
 ---
 
 **Contact**: [vvkvohra1102@gmail.com](mailto:vvkvohra1102@gmail.com)
+
+---
+
+
