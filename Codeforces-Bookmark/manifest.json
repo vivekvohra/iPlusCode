@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "iPlusCode – Codeforces Assistant & Problem Tracker",
+  "name": "iPlusCode – From Problem Tracking to Peer Learning",
   "short_name": "iPlusCode",
-  "version": "1.0.0",
-  "description": "Track your bookmarked Codeforces problems and sync solved status.",
+  "version": "1.1",
+  "description": "Bookmark problems, sync solves and view friends’ accepted solutions.",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -31,8 +31,8 @@
       "https://codeforces.com/gym/*/problem/*",
       "https://codeforces.com/edu/*/practice/contest/*/problem/*"
     ],
-    "css": ["styles.css"],
-    "js": ["content.js"]
+    "css": ["styles.css", "prettify.css"],
+    "js": ["prettify.js", "content.js"]
     
   }
 ]
