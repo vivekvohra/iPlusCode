@@ -45,7 +45,7 @@
 
 ## 🧩 Install
 
-🛒 [Get it on the Chrome Web Store(soon...)](https://chrome.google.com/webstore/detail/ipluscode/)
+🛒 [Get it on the Chrome Web Store](https://chromewebstore.google.com/detail/dldgiedjpmpfakogeeipicafjngnefej?utm_source=item-share-cb)
 
 Or install manually:
 1. Clone this repo
