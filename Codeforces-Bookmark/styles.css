@@ -1,27 +1,38 @@
-body {
+/* Removed: global body — scope to popup only */
+#popupRoot {
   font-family: Arial, sans-serif;
   padding: 10px;
   min-width: 330px;   /* increased from 300px */
   min-height: 250px;
 }
 
-
-
-table {
+/* Removed: global table styles — scope to popup */
+#mainUI table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
 
-thead {
+#mainUI table.highlight {
+  width: 100%;
+  background: #f8f8f8;
+  border-collapse: collapse;
+}
+
+/* Removed: global thead */
+#mainUI thead {
   background-color: #e9f1ff;
 }
 
-th, td {
+/* Removed: global th, td */
+#mainUI th, #mainUI td {
   padding: 6px;
   text-align: left;
   border: 1px solid #ccc;
 }
+
+
+
 
 tr.solved-row {
   background-color: #ccffd8;
@@ -29,6 +40,14 @@ tr.solved-row {
 
 tr.solved-row td {
   font-weight: bold;
+}
+
+td.line pre {
+  margin: 0;
+  padding: 10px;
+  font-family: Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.4em;
 }
 
 
@@ -119,14 +138,68 @@ tr.solved-row td {
 .iplus_hidden {
   display: none;
 }
+
 .modal-content {
   background: white;
   padding: 20px;
   border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
+  width: 95%;
+  max-width: 800px;
+  max-height: 90vh; /* ✅ caps height */
+  overflow-y: auto;  /* ✅ adds scroll */
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+
+
+.code-block-wrapper {
   position: relative;
 }
+
+
+
+/* Added by extension: bookmark and tag toggle buttons */
+.cf-toggle-tags {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #3c3c3c;
+  background: #f2f3f5;
+  border: 1px solid #dcdfe3;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.cf-toggle-tags:hover { background: #e5e6e9; }
+
+.cf-button {
+  margin-left: 10px;
+  background: #e1ecf4;
+  border: 1px solid #a5c4dc;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.cf-button.red {
+  background: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+
+#showFriendsCodes {
+  font-size: 13px;
+  color: #0000cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#showFriendsCodes:hover {
+  color: #800000;
+}
+
 
 .close-button {
   position: absolute;
@@ -186,3 +259,59 @@ tr.solved-row td {
   cursor: pointer;
 }
 
+.roundbox.sidebox {
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  padding: 0;
+  margin-top: 1em;
+  font-family: Verdana, sans-serif;
+}
+
+.roundbox .caption.titled {
+  font-weight: bold;
+  padding: 5px 10px;
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #ccc;
+}
+
+.content-list {
+  list-style: disc inside;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.content-list a {
+  color: #0000ee;
+  text-decoration: underline;
+}
+
+
+
+/* ===== Override prettify zebra striping to match CF light-gray style ===== */
+pre.prettyprint,
+pre.prettyprint.linenums {
+  background-color: #f8f8f8 !important;
+  color: #000 !important;
+}
+
+ol.linenums {
+  background-color: #f0f0f0 !important;
+  margin: 0 0 0 3em !important;
+  padding: 0 !important;
+}
+
+ol.linenums > li {
+  background-color: #f8f8f8 !important;
+  list-style-type: decimal;
+  padding-left: 0.5em;
+}
+
+ol.linenums > li:nth-child(odd) {
+  background-color: #f2f2f2 !important;
+}
+
+/* Ensure syntax colors stand out */
+pre.prettyprint .kwd { color: #0000ff; }
+pre.prettyprint .typ { color: #2b91af; }
+pre.prettyprint .str { color: #a31515; }
+pre.prettyprint .com { color: #008000; }
