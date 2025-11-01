@@ -21,6 +21,11 @@
 ## 📸 Screenshots
 
 <p align="center">
+  <img width="800" alt="Friends_Code" src="https://github.com/user-attachments/assets/d9ac61bb-5169-4c50-9588-62cda1ee3f9e" />
+
+  <br>
+</p>
+<p align="center">
   <img src="https://github.com/user-attachments/assets/01e58222-7921-4d12-a6aa-b75571bbe1ef" width="800" alt="Bookmark & Sync UI"/>
   <br>
 </p>
