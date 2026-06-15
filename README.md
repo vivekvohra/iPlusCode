@@ -2,7 +2,7 @@
   <img width="128" height="128" alt="icon128" src="https://github.com/user-attachments/assets/a1c24266-4591-4db3-850c-99ff2cbbbade" />
 </p>
 
-<h1 align="center">iPlusCode – Codeforces Assistant Chrome Extension</h1>
+<h1 align="center">iPlusFlow for Codeforces - Problem Tracking & Peer Learning </h1>
 
 **iPlusCode** is a lightweight Chrome extension designed to help competitive programmers manage their Codeforces practice more efficiently. With iPlusCode, you can track your solved problems, bookmark unsolved ones, filter by rating or tag, and even leave personal notes — all synced via your Chrome account.
 
