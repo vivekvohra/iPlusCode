@@ -64,7 +64,7 @@ Or install manually:
 
 We respect your privacy. iPlusCode does **not** collect any personal data or track your activity.
 
-📄 [View our Privacy Policy](https://vivekvohra.github.io/iplusflow/privacy)
+📄 [View our Privacy Policy](https://vivekvohra.github.io/iPlusFlow/privacy)
 
 ---
 
