@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - iPlusCode</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        h1 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 12px;
+            overflow-x: auto;
+            border-radius: 6px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .container {
+            background: white;
+        }
+
+        footer {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Privacy Policy – iPlusCode</h1>
+
+<p>
+The <strong>iPlusCode</strong> Chrome extension helps users track Codeforces problems,
+view friends' accepted submissions, and maintain private notes.
+All data is stored locally within your browser or Chrome storage and is not
+transmitted to any servers operated by the developer.
+</p>
+
+<h2>What We Store</h2>
+
+<ul>
+    <li>Your Codeforces handle</li>
+    <li>Bookmarked problems</li>
+    <li>Optional personal notes</li>
+    <li>A cached list of your Codeforces friends (for display purposes only)</li>
+    <li>Cached friend submissions for solved problems (stored locally for performance)</li>
+</ul>
+
+<p>
+Bookmarks, notes, and settings may be stored using Chrome Sync Storage
+to support syncing across browsers where you are signed into Chrome.
+Temporary caches may be stored using Chrome Local Storage to improve
+performance and reduce network requests.
+</p>
+
+<h2>What We Do Not Do</h2>
+
+<ul>
+    <li>❌ Collect personal or sensitive data</li>
+    <li>❌ Track your browsing activity</li>
+    <li>❌ Use cookies or localStorage for tracking</li>
+    <li>❌ Send your data to external servers operated by the developer</li>
+    <li>❌ Access your passwords, login credentials, or authentication tokens</li>
+</ul>
+
+<h2>Permissions Explanation</h2>
+
+<p>The extension requests the following permission:</p>
+
+<pre><code>"host_permissions": ["https://codeforces.com/*"]</code></pre>
+
+<p>This permission is necessary to support the extension's core features:</p>
+
+<ul>
+    <li>✅ Access your public Codeforces submission history through the Codeforces API to identify solved problems.</li>
+    <li>✅ Load your Codeforces friends list (when you are logged into Codeforces) to support the Friends' Accepted Codes feature.</li>
+    <li>✅ Access problem pages and submission pages to display accepted submissions from friends when requested by the user.</li>
+</ul>
+
+<p>These actions:</p>
+
+<ul>
+    <li>Are initiated by user interaction.</li>
+    <li>Use publicly available Codeforces data or pages you are already authorized to view.</li>
+    <li>Do not access or store your Codeforces credentials.</li>
+    <li>Do not automate browser navigation or interact with unrelated websites.</li>
+</ul>
+
+<h2>Data Removal</h2>
+
+<p>
+Stored data may be removed by:
+</p>
+
+<ul>
+    <li>Uninstalling the extension.</li>
+    <li>Clearing Chrome extension storage manually.</li>
+</ul>
+
+<h2>Contact</h2>
+
+<p>
+For questions regarding this Privacy Policy:
+<br><br>
+📧 <a href="mailto:vvkvohra1102@gmail.com">vvkvohra1102@gmail.com</a>
+</p>
+
+<footer>
+    Last Updated: June 2026
+</footer>
+
+</div>
+
+</body>
+</html>
