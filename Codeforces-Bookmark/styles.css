@@ -34,15 +34,15 @@
 
 
 
-tr.solved-row {
+#mainUI tr.solved-row {
   background-color: #ccffd8;
 }
 
-tr.solved-row td {
+#mainUI tr.solved-row td {
   font-weight: bold;
 }
 
-td.line pre {
+#mainUI td.line pre {
   margin: 0;
   padding: 10px;
   font-family: Consolas, monospace;
@@ -139,7 +139,7 @@ td.line pre {
   display: none;
 }
 
-.modal-content {
+.iplus_modal-content {
   background: white;
   padding: 20px;
   border-radius: 10px;
@@ -201,14 +201,14 @@ td.line pre {
 }
 
 
-.close-button {
+.iplus_close-button {
   position: absolute;
   top: 10px; right: 15px;
   font-size: 24px;
   cursor: pointer;
 }
 
-.modal-footer {
+.iplus_modal-footer {
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;
@@ -288,30 +288,48 @@ td.line pre {
 
 
 /* ===== Override prettify zebra striping to match CF light-gray style ===== */
-pre.prettyprint,
-pre.prettyprint.linenums {
+.iplus_modal pre.prettyprint,
+.iplus_modal pre.prettyprint.linenums {
   background-color: #f8f8f8 !important;
   color: #000 !important;
 }
 
-ol.linenums {
+.iplus_modal ol.linenums {
   background-color: #f0f0f0 !important;
   margin: 0 0 0 3em !important;
   padding: 0 !important;
 }
 
-ol.linenums > li {
+.iplus_modal ol.linenums > li {
   background-color: #f8f8f8 !important;
   list-style-type: decimal;
   padding-left: 0.5em;
 }
 
-ol.linenums > li:nth-child(odd) {
+.iplus_modal ol.linenums > li:nth-child(odd) {
   background-color: #f2f2f2 !important;
 }
 
 /* Ensure syntax colors stand out */
-pre.prettyprint .kwd { color: #0000ff; }
-pre.prettyprint .typ { color: #2b91af; }
-pre.prettyprint .str { color: #a31515; }
-pre.prettyprint .com { color: #008000; }
+.iplus_modal pre.prettyprint .kwd { color: #0000ff; }
+.iplus_modal pre.prettyprint .typ { color: #2b91af; }
+.iplus_modal pre.prettyprint .str { color: #a31515; }
+.iplus_modal pre.prettyprint .com { color: #008000; }
+
+#mainUI th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+#mainUI th.sortable:hover {
+  background-color: #d8e6ff;
+}
+
+.sort-indicator {
+  margin-left: 4px;
+  font-size: 11px;
+  color: #0070f3;
+  font-weight: bold;
+}
