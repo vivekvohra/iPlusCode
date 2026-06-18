@@ -1,10 +1,21 @@
 // content.js
 (async function() {
-  const MAX_FRIENDS = 20;
+  const MAX_FRIENDS = 10;
   const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 // add after CACHE_DURATION
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+let lastApiCallTime = 0;
+async function rateLimitedFetch(url, options) {
+  const now = Date.now();
+  const timeSinceLastCall = now - lastApiCallTime;
+  if (timeSinceLastCall < 2000) {
+    await sleep(2000 - timeSinceLastCall);
+  }
+  lastApiCallTime = Date.now();
+  return fetch(url, options);
+}
 
 function guessLangClass(lang) {
   if (!lang) return 'lang-cpp';
@@ -67,7 +78,7 @@ function guessLangClass(lang) {
   // 📌 Bookmark and Remove buttons
   const titleEl = document.querySelector('.problem-statement .title');
   if (!titleEl) return;  // stop if not on a problem page
-  const username = document.querySelector('a[href^="/profile/"]')?.textContent.trim() || '';
+  const username = document.querySelector('#header a[href^="/profile/"]')?.textContent.trim() || '';
 
   const btnBookmark = document.createElement('button');
   btnBookmark.textContent = '🔖 Bookmark';
@@ -120,17 +131,28 @@ function guessLangClass(lang) {
   const problemKey = getCurrentProblemKey();
   if (username && problemKey) {
     const [contestId, problemIndex] = problemKey.split('-');
-    fetch(`https://codeforces.com/api/user.status?handle=${username}&from=1&count=1000`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'OK' && data.result.some(sub =>
-              sub.verdict === 'OK' &&
-              sub.problem.contestId == contestId &&
-              sub.problem.index === problemIndex)) {
-          addSidebarSolvedBadge();
-        }
-      })
-      .catch(e => console.warn('API fetch error:', e));
+    chrome.storage.sync.get({ bookmarks: [] }, ({ bookmarks }) => {
+      const bookmarked = bookmarks.find(b => b.url === window.location.href);
+      if (bookmarked && bookmarked.solved) {
+        addSidebarSolvedBadge();
+        return;
+      }
+      rateLimitedFetch(`https://codeforces.com/api/user.status?handle=${username}&from=1&count=1000`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'OK' && data.result.some(sub =>
+                sub.verdict === 'OK' &&
+                sub.problem.contestId == contestId &&
+                sub.problem.index === problemIndex)) {
+            addSidebarSolvedBadge();
+            if (bookmarked && !bookmarked.solved) {
+              bookmarked.solved = true;
+              chrome.storage.sync.set({ bookmarks });
+            }
+          }
+        })
+        .catch(e => console.warn('API fetch error:', e));
+    });
   }
 
   function addSidebarSolvedBadge() {
@@ -170,7 +192,7 @@ async function fetchFriendsAcceptedCodes(contestId, index) {
 
       // 1) contest.status (fast)
       try {
-        const r1 = await fetch(
+        const r1 = await rateLimitedFetch(
           `https://codeforces.com/api/contest.status?contestId=${cidNum}&handle=${encodeURIComponent(handle)}`
         );
         const d1 = await r1.json();
@@ -184,7 +206,7 @@ async function fetchFriendsAcceptedCodes(contestId, index) {
 
       // 2) user.status (fallback)
       if (!accepted) {
-        const r2 = await fetch(
+        const r2 = await rateLimitedFetch(
           `https://codeforces.com/api/user.status?handle=${encodeURIComponent(handle)}&from=1&count=1000`
         );
         const d2 = await r2.json();
@@ -206,12 +228,22 @@ async function fetchFriendsAcceptedCodes(contestId, index) {
       const subId = accepted.id;
       const lang  = accepted.programmingLanguage || '';
 
-      // ✅ Always try all known routes (don’t depend on current page path)
-      const urls = [
-        `https://codeforces.com/contest/${cidNum}/submission/${subId}`,
-        `https://codeforces.com/problemset/submission/${cidNum}/${subId}`,
-        `https://codeforces.com/gym/${cidNum}/submission/${subId}`,
-      ];
+      // ✅ Order URLs based on current page URL context to try the most likely route first
+      const urls = [];
+      const currentUrl = window.location.href;
+      if (currentUrl.includes('/gym/')) {
+        urls.push(`https://codeforces.com/gym/${cidNum}/submission/${subId}`);
+        urls.push(`https://codeforces.com/contest/${cidNum}/submission/${subId}`);
+        urls.push(`https://codeforces.com/problemset/submission/${cidNum}/${subId}`);
+      } else if (currentUrl.includes('/problemset/')) {
+        urls.push(`https://codeforces.com/problemset/submission/${cidNum}/${subId}`);
+        urls.push(`https://codeforces.com/contest/${cidNum}/submission/${subId}`);
+        urls.push(`https://codeforces.com/gym/${cidNum}/submission/${subId}`);
+      } else {
+        urls.push(`https://codeforces.com/contest/${cidNum}/submission/${subId}`);
+        urls.push(`https://codeforces.com/problemset/submission/${cidNum}/${subId}`);
+        urls.push(`https://codeforces.com/gym/${cidNum}/submission/${subId}`);
+      }
 
       let code = '', subUrl = '';
       for (const u of urls) {
@@ -220,7 +252,7 @@ async function fetchFriendsAcceptedCodes(contestId, index) {
 
         const html = await subRes.text();
         const doc  = new DOMParser().parseFromString(html, 'text/html');
-        const pre  = doc.querySelector('#program-source-text, pre.program-source, pre');
+        const pre  = doc.querySelector('#program-source-text, pre.program-source');
 
         if (pre && pre.textContent) {
           code = pre.textContent;
@@ -265,10 +297,10 @@ function displayFriendsCodesModal(results) {
   modal.className = 'iplus_modal';
 
   const content = document.createElement('div');
-  content.className = 'modal-content';
+  content.className = 'iplus_modal-content';
 
   const closeBtn = document.createElement('span');
-  closeBtn.className = 'close-button';
+  closeBtn.className = 'iplus_close-button';
   closeBtn.textContent = '×';
   closeBtn.addEventListener('click', () => modal.remove());
 
@@ -332,8 +364,8 @@ function displayFriendsCodesModal(results) {
   // 👉 Inject sidebar section for "Friends’ Accepted Codes"
   const sidebar = document.getElementById('sidebar');
   if (sidebar && problemKey) {
-    // Load any cached friend codes for this problem from storage
-    const data = await chrome.storage.sync.get('friendCache');
+    // Load any cached friend codes for this problem from local storage (not sync!)
+    const data = await chrome.storage.local.get('friendCache');
     const friendCache = data.friendCache || {};
     const cacheEntry = friendCache[problemKey];
     const friendCodesCache = {};  // in-page cache state
@@ -345,7 +377,7 @@ function displayFriendsCodesModal(results) {
       if (cacheEntry) {
         // Remove expired cache entry to keep storage clean
         delete friendCache[problemKey];
-        chrome.storage.sync.set({ friendCache });
+        chrome.storage.local.set({ friendCache });
       }
     }
 
@@ -373,7 +405,7 @@ function displayFriendsCodesModal(results) {
       const loadingModal = document.createElement('div');
       loadingModal.className = 'iplus_modal';
       const inner = document.createElement('div');
-      inner.className = 'modal-content';
+      inner.className = 'iplus_modal-content';
       const p = document.createElement('p');
       p.textContent = "Fetching friends' codes...";
       inner.appendChild(p);
@@ -390,11 +422,11 @@ function displayFriendsCodesModal(results) {
       // Update caches with the new results
       friendCodesCache[problemKey] = { status: 'done', results };
       displayFriendsCodesModal(results);
-      // Persist the fetched codes to chrome.storage with timestamp
-      const storageData = await chrome.storage.sync.get({ friendCache: {} });
+      // Persist the fetched codes to local storage with timestamp
+      const storageData = await chrome.storage.local.get({ friendCache: {} });
       const newCache = storageData.friendCache;
       newCache[problemKey] = { timestamp: Date.now(), results };
-      chrome.storage.sync.set({ friendCache: newCache });
+      chrome.storage.local.set({ friendCache: newCache });
     };
   }
 })();
