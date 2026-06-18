@@ -1,4 +1,4 @@
-/* iPlusCode - Popup Script (MV3)
+/* iplusflow - Popup Script (MV3)
  * - Safe DOM usage (no innerHTML for dynamic strings)
  * - Handle validation & existence check
  * - Robust friends import (regex fix)
@@ -28,15 +28,14 @@
     const m =
       url.match(/\/contest\/(\d+)\/problem\/([A-Za-z0-9]+)/) ||
       url.match(/\/gym\/(\d+)\/problem\/([A-Za-z0-9]+)/) ||
-      url.match(/\/problemset\/problem\/(\d+)\/([A-Za-z0-9]+)/);
+      url.match(/\/problemset\/problem\/(\d+)\/([A-Za-z0-9]+)/) ||
+      url.match(/\/edu\/[^/]+\/practice\/contest\/(\d+)\/problem\/([A-Za-z0-9]+)/);
     if (!m) return null;
     return `${m[1]}-${m[2]}`;
   }
 
   // ---------- Sorting State ----------
-  const titleTh = $('th-title');
-  const ratingTh = $('th-rating');
-  let sortState = { key: 'title', dir: 1 }; // 1=asc, -1=desc
+  let sortState = { key: 'rating', dir: 1 }; // 1=asc, -1=desc
 
   function setSort(key) {
     if (sortState.key === key) sortState.dir *= -1;
@@ -48,25 +47,27 @@
     const dir = sortState.dir;
     const key = sortState.key;
     items.sort((a, b) => {
-      let av, bv;
       if (key === 'rating') {
-        const pa = parseInt(a.rating, 10);
-        const pb = parseInt(b.rating, 10);
-        av = Number.isFinite(pa) ? pa : -Infinity;
-        bv = Number.isFinite(pb) ? pb : -Infinity;
+        const pa = Number(a.rating) || 0;
+        const pb = Number(b.rating) || 0;
+
+        if (pa !== pb) {
+          return (pa - pb) * dir;
+        }
+        return (a.originalIndex - b.originalIndex);
       } else {
-        av = (a.title || '').toLowerCase();
-        bv = (b.title || '').toLowerCase();
+        const av = (a.title || '').toLowerCase();
+        const bv = (b.title || '').toLowerCase();
+        if (av < bv) return -1 * dir;
+        if (av > bv) return 1 * dir;
+        return (a.originalIndex - b.originalIndex);
       }
-      if (av < bv) return -1 * dir;
-      if (av > bv) return  1 * dir;
-      return (a.originalIndex - b.originalIndex);
     });
 
     // update indicators
     document.querySelectorAll('.sort-indicator').forEach(s => s.textContent = '');
     const ind = (sortState.dir === 1 ? '▲' : '▼');
-    const th = (sortState.key === 'rating' ? ratingTh : titleTh);
+    const th = (sortState.key === 'rating' ? $('th-rating') : $('th-title'));
     if (th) {
       const span = th.querySelector('.sort-indicator');
       if (span) span.textContent = ind;
@@ -74,7 +75,7 @@
   }
 
   // ---------- Render ----------
-  function buildRow(b, idx) {
+  function buildRow(b) {
     const tr = document.createElement('tr');
     if (b.solved) tr.classList.add('solved-row');
 
@@ -105,11 +106,11 @@
 
     // Notes
     const tdNotes = document.createElement('td');
-    const btn = document.createElement('button');
-    btn.className = 'edit-notes';
-    btn.textContent = 'Edit';
-    btn.addEventListener('click', () => openNotesModal(idx));
-    tdNotes.appendChild(btn);
+    const btnEdit = document.createElement('button');
+    btnEdit.className = 'edit-notes';
+    btnEdit.textContent = 'Edit';
+    btnEdit.addEventListener('click', () => openNotesModal(b.url));
+    tdNotes.appendChild(btnEdit);
 
     tr.append(tdSolved, tdTitle, tdRating, tdTags, tdNotes);
     return tr;
@@ -155,7 +156,7 @@
       // Rebuild table
       tbody.textContent = '';
       for (const it of items) {
-        tbody.appendChild(buildRow(it, it.originalIndex));
+        tbody.appendChild(buildRow(it));
       }
 
       // Last sync
@@ -318,18 +319,19 @@ async function fetchFriendsList(currentHandle) {
 
 
   // ---------- Notes Modal ----------
-  let editingIndex = null;
+  let editingUrl = null;
   const notesModal  = $('notesModal');
   const notesText   = $('notesText');
   const saveNoteBtn = $('saveNoteBtn');
   const cancelNoteBtn = $('cancelNoteBtn');
   const closeNotes  = $('closeNotes');
 
-  function openNotesModal(idx) {
-    editingIndex = idx;
+  function openNotesModal(url) {
+    editingUrl = url;
     chrome.storage.sync.get({ bookmarks: [] }, ({ bookmarks }) => {
       if (!notesModal || !notesText) return;
-      notesText.value = bookmarks[idx]?.notes || '';
+      const bookmarked = bookmarks.find(b => b.url === url);
+      notesText.value = bookmarked?.notes || '';
       notesModal.classList.remove('iplus_hidden');
       notesText.focus();
     });
@@ -338,7 +340,7 @@ async function fetchFriendsList(currentHandle) {
   function closeNotesModal() {
     if (!notesModal) return;
     notesModal.classList.add('iplus_hidden');
-    editingIndex = null;
+    editingUrl = null;
   }
 
   closeNotes?.addEventListener('click', closeNotesModal);
@@ -346,51 +348,59 @@ async function fetchFriendsList(currentHandle) {
 
   saveNoteBtn?.addEventListener('click', () => {
     chrome.storage.sync.get({ bookmarks: [] }, ({ bookmarks }) => {
-      if (editingIndex !== null && bookmarks[editingIndex]) {
-        bookmarks[editingIndex].notes = notesText?.value || '';
-        chrome.storage.sync.set({ bookmarks }, () => {
-          closeNotesModal();
-          render();
-        });
+      if (editingUrl) {
+        const bookmarked = bookmarks.find(b => b.url === editingUrl);
+        if (bookmarked) {
+          bookmarked.notes = notesText?.value || '';
+          chrome.storage.sync.set({ bookmarks }, () => {
+            closeNotesModal();
+            render();
+          });
+        }
       }
     });
   });
 
   // ---------- Init Events ----------
-  titleTh?.addEventListener('click', () => setSort('title'));
-  ratingTh?.addEventListener('click', () => setSort('rating'));
-  $('filter')?.addEventListener('change', render);
-  $('tagFilter')?.addEventListener('input', render);
-  $('resetHandle')?.addEventListener('click', async () => {
-    await chrome.storage.sync.set({ cf_handle: '' });
+  function init() {
+    $('th-title')?.addEventListener('click', () => setSort('title'));
+    $('th-rating')?.addEventListener('click', () => setSort('rating'));
+    $('filter')?.addEventListener('change', render);
+    $('tagFilter')?.addEventListener('input', render);
+    $('resetHandle')?.addEventListener('click', async () => {
+      await chrome.storage.sync.set({ cf_handle: '' });
+      render();
+    });
+    $('sync')?.addEventListener('click', runSync);
+
     render();
-  });
-  $('sync')?.addEventListener('click', runSync);
-
-  // ---------- First render ----------
-// ---------- First render ----------
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') render();
-});
-
-// Auto-fetch friends once if storage is empty
-chrome.storage.sync.get({ cf_handle: '', cf_friends: [] }, async ({ cf_handle, cf_friends }) => {
-  if (cf_handle && (!cf_friends || cf_friends.length === 0)) {
-    try {
-      const friends = (await fetchFriendsList(cf_handle)).slice(0, 20); // ⬅️ same 20-limit
-      await chrome.storage.sync.set({
-        cf_friends: friends,
-        cf_friends_count: friends.length
-      });
-      console.log('🔁 Auto-fetched friends:', friends.length);
-    } catch (e) {
-      console.warn('⚠️ Auto-fetch friends failed:', e);
-    }
   }
-});
 
-render();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') render();
+  });
+
+  // Auto-fetch friends once if storage is empty
+  chrome.storage.sync.get({ cf_handle: '', cf_friends: [] }, async ({ cf_handle, cf_friends }) => {
+    if (cf_handle && (!cf_friends || cf_friends.length === 0)) {
+      try {
+        const friends = (await fetchFriendsList(cf_handle)).slice(0, 20); // ⬅️ same 20-limit
+        await chrome.storage.sync.set({
+          cf_friends: friends,
+          cf_friends_count: friends.length
+        });
+        console.log('🔁 Auto-fetched friends:', friends.length);
+      } catch (e) {
+        console.warn('⚠️ Auto-fetch friends failed:', e);
+      }
+    }
+  });
 
 })();
 
