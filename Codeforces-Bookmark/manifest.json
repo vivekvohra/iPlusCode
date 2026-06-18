@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "iPlusCode – From Problem Tracking to Peer Learning",
-  "short_name": "iPlusCode",
-  "version": "1.1",
+  "name": "iPlusFlow for Codeforces – From Problem Tracking to Peer Learning",
+  "short_name": "iPlusFlow for Codeforces",
+  "version": "1.2.1",
   "description": "Bookmark problems, sync solves and view friends’ accepted solutions.",
   "action": {
     "default_popup": "popup.html",
@@ -23,18 +23,22 @@
   "host_permissions": [
     "https://codeforces.com/*"
   ],
-"content_scripts": [
-  {
-    "matches": [
-      "https://codeforces.com/contest/*/problem/*",
-      "https://codeforces.com/problemset/problem/*",
-      "https://codeforces.com/gym/*/problem/*",
-      "https://codeforces.com/edu/*/practice/contest/*/problem/*"
-    ],
-    "css": ["styles.css", "prettify.css"],
-    "js": ["prettify.js", "content.js"]
-    
-  }
-]
-
+  "content_scripts": [
+    {
+      "matches": [
+        "https://codeforces.com/contest/*/problem/*",
+        "https://codeforces.com/problemset/problem/*",
+        "https://codeforces.com/gym/*/problem/*",
+        "https://codeforces.com/edu/*/practice/contest/*/problem/*"
+      ],
+      "css": [
+        "styles.css",
+        "prettify.css"
+      ],
+      "js": [
+        "prettify.js",
+        "content.js"
+      ]
+    }
+  ]
 }
