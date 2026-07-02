@@ -1,122 +1,111 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
+import './App.css'; // You can keep your styling imports
 
-function App() {
-  const [count, setCount] = useState(0)
 
+// setup UI component
+function SetupUI() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div id="setup">
+      {/* Logo */}
+      <img src="icons/icon128.png" alt="iplusflow Logo"
+        className="setup-logo" width="64" height="64" />
+      <h2>👋 Welcome to iplusflow!</h2>
+      <p className="setup-desc">
+        Enter your Codeforces handle below so you can bookmark problems and track which ones you’ve solved.
+      </p>
+      <input type="text" id="handle" placeholder="Enter Codeforces handle" />
+      <button id="saveHandle">💾 Save Handle</button>
+    </div>
+  );
 }
 
-export default App
+function MainUI() {
+  return (
+    <>
+      <div id="mainUI" className="iplus_hidden">
+        <div id="popupHeader">
+          <img
+            id="popupLogo"
+            src="icons/icon128.png"
+            alt="iplusflow Logo"
+            width="64"
+            height="64"
+          />
+          <h3 id="popupTitle">Bookmarked Problems</h3>
+          {/* ⚙️ Change Handle button */}
+          <button id="resetHandle" title="Change Codeforces handle">⚙️</button>
+        </div>
+
+        {/* NEW: filter + sync grouped together */}
+        <div id="controls">
+          <select id="filter">
+            <option value="All">All</option>
+            <option value="<1200">&lt;1200</option>
+            <option value="1200-1600">1200–1600</option>
+            <option value=">1600">&gt;1600</option>
+            <option value="unsolved">Unsolved</option>
+          </select>
+          <input
+            type="text"
+            id="tagFilter"
+            placeholder="Filter by tag…"
+          />
+          <button id="sync">🔄 Sync</button>
+        </div>
+
+        <p id="lastSync"></p>
+
+        <table id="table">
+          <thead>
+            <tr>
+              <th>Solved</th>
+              <th id="th-title" className="sortable">
+                Problem Title
+                <span className="sort-indicator"></span>
+              </th>
+              <th id="th-rating" className="sortable">
+                Rating
+                <span className="sort-indicator"></span>
+              </th>
+              <th>Tags</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="list"></tbody>
+        </table>
+      </div>
+
+      {/* Notes Modal */}
+      <div id="notesModal" className="iplus_modal iplus_hidden">
+        <div className="iplus_modal-content">
+          <span className="iplus_close-button" id="closeNotes">&times;</span>
+          <h3>Edit Notes</h3>
+          <textarea
+            id="notesText"
+            rows={10}
+            placeholder="Enter your notes..."
+          ></textarea>
+          <div className="iplus_modal-footer">
+            <button id="saveNoteBtn">Save</button>
+            <button id="cancelNoteBtn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+
+
+
+
+export default function App() {
+  // We declare our state here at the top
+  const [handle, setHandle] = useState("");
+
+  return (
+    <div id="popupRoot">
+      {handle ? <MainUI /> : <SetupUI />}
+    </div>
+  );
+}
